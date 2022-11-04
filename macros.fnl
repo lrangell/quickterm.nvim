@@ -44,4 +44,7 @@
 ; ; (fn nmap [maps] (full-mapper :n "" maps))
 ;
 
-{: import : import-from : def : import-submodules : setm}
+(fn merge-right [left-tbl right-tbl]
+  `(vim.tbl_deep_extend :force ,left-tbl ,right-tbl))
+
+{: import : import-from : def : import-submodules : setm : merge-right}
