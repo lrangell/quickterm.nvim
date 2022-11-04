@@ -5,8 +5,6 @@
 (import-submodules :quickTerm utils config)
 
 (def api vim.api)
-(tset package.loaded :quickTerm nil)
-(tset package.loaded :quickterm nil)
 (def layouts [:float :vsplit :split])
 (def default-keymaps {:toggle :<space>k})
 
@@ -17,8 +15,11 @@
                             text)})
 
 ; TODO: auto move to last line
-
-; TODO: use window % on float mode
+; TODO: fix vimp error
+; TODO: implement cycle split function
+; TODO: implement change split function
+; TODO: center float and use % of screen
+; TODO: start in insert mode on toggle
 
 (fn screen-size [p]
   (let [{: width : height} (. (vim.api.nvim_list_uis) 1)
@@ -37,25 +38,17 @@
       win))
 
   (match split
-    :float
-    (api.nvim_open_win bufn true
-                       (merge-right {:relative :editor
-                                     ; :width 100
-                                     ; :height 30
-                                     ; :row 5
-                                     ; :col 5
-                                     :noautocmd true
-                                     :style :minimal
-                                     :border :solid}
-                                    (screen-size 0.9))) ; :border :rounded})
-    :vsplit
-    (open-split :v)
-    :split
-    (open-split "")))
+    :float (api.nvim_open_win bufn true
+                              (merge-right {:relative :editor
+                                            :noautocmd true
+                                            :style :minimal
+                                            :border :solid}
+                                           (screen-size 0.9)))
+    :vsplit (open-split :v)
+    :split (open-split "")))
 
 (fn terminal.open [{: bufn : window : split : visible &as term}]
-  (if (= nil visible) (term:init) (tset term :window (term:create_window))) ; (api.nvim_set_current_win term.window) ; (vim.api.nvim_command "norm! G")
-  )
+  (if (= nil visible) (term:init) (tset term :window (term:create_window))))
 
 (fn terminal.close [{: window &as term}]
   (when (not= nil window)
@@ -88,7 +81,7 @@
 (fn terminal.find_chan [term]
   (-> (api.nvim_list_chans)
       (utils.find (fn [c]
-                    (= term.bufn (. c :buffer)))) ; TODO: dont use fn
+                    (= term.bufn (. c :buffer))))
       (. :id)
       (tset term :chan_id)))
 
@@ -99,8 +92,8 @@
 
 ; TODO: clean up
 (fn terminal.init [{: cmd : bufn &as term}]
-  (setm term {:window (term:create_window) :visible true}) ; (tset term :window (term:create_window)) ; (tset term :visible true)
-  (api.nvim_buf_call term.bufn (partial vim.fn.termopen :zsh)) ; (when (not open-in-background) (open_terminal term))
+  (setm term {:window (term:create_window) :visible true})
+  (api.nvim_buf_call term.bufn (partial vim.fn.termopen :zsh))
   (api.nvim_command :startinsert)
   (vim.fn.feedkeys (or (.. cmd "\n") ""))
   (each [lhs rhs (pairs {:<Esc> "<C-\\><C-n>"
@@ -118,15 +111,5 @@
                       (fn []
                         (: new-term method))))
     new-term))
-
-; TODO: fix vimp error
-; TODO: implement cycle split function
-; TODO: implement change split function
-; TODO: center float and use % of screen
-; TODO: start in insert mode on toggle
-
-; (tset _G :remoov_dev (create {:cmd "jw && yarn dev web internal-website remoov-website"}))
-; (tset _G :remoov_dev (create {:cmd :ls}))
-(tset _G :zubzob (create {:cmd :ls :keymaps {:toggle :<space>l} :split :float}))
 
 {: create}
