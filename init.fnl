@@ -1,5 +1,6 @@
 (module :quickTerm package.seeall)
-(import-macros {: def : import : import-submodules : setm} :quickTerm.macros)
+(import-macros {: def : import : import-submodules : setm : merge-right}
+               :quickTerm.macros)
 
 (import-submodules :quickTerm utils config)
 
@@ -18,6 +19,16 @@
 ; TODO: auto move to last line
 
 ; TODO: use window % on float mode
+
+(fn screen-size [p]
+  (let [{: width : height} (. (vim.api.nvim_list_uis) 1)
+        term-width (math.floor (* width p))
+        term-heigth (math.floor (* height p))]
+    {:width term-width
+     :height term-heigth
+     :col (- (/ (- width term-width) 2) 1)
+     :row (- (/ (- height term-heigth) 2) 1)}))
+
 (fn terminal.create_window [{: bufn : split}]
   (fn open-split [v]
     (vim.cmd (.. v :split))
@@ -28,13 +39,15 @@
   (match split
     :float
     (api.nvim_open_win bufn true
-                       {:relative :editor
-                        :width 100
-                        :height 30
-                        :row 5
-                        :col 5
-                        :style :minimal
-                        :border :shadow}) ; :border :rounded})
+                       (merge-right {:relative :editor
+                                     ; :width 100
+                                     ; :height 30
+                                     ; :row 5
+                                     ; :col 5
+                                     :noautocmd true
+                                     :style :minimal
+                                     :border :solid}
+                                    (screen-size 0.9))) ; :border :rounded})
     :vsplit
     (open-split :v)
     :split
@@ -95,11 +108,11 @@
                          :Tab "<C-\\><C-w>w"})]
     (vim.keymap.set :t lhs rhs {:buffer bufn})))
 
-(fn create [{: cmd : user-keymaps}]
+(fn create [{: cmd : keymaps : split}]
   (let [bufn (vim.api.nvim_create_buf false false)
-        new-term (vim.tbl_deep_extend :force terminal {: bufn : cmd})
-        keymaps (or user-keymaps default-keymaps)]
-    (each [method lhs (pairs default-keymaps)]
+        new-term (merge-right terminal {: bufn : cmd : split})
+        all-keymaps (merge-right default-keymaps keymaps)]
+    (each [method lhs (pairs all-keymaps)]
       (pp {: method : lhs})
       (vim.keymap.set [:n :t] lhs
                       (fn []
@@ -109,9 +122,11 @@
 ; TODO: fix vimp error
 ; TODO: implement cycle split function
 ; TODO: implement change split function
+; TODO: center float and use % of screen
+; TODO: start in insert mode on toggle
 
 ; (tset _G :remoov_dev (create {:cmd "jw && yarn dev web internal-website remoov-website"}))
 ; (tset _G :remoov_dev (create {:cmd :ls}))
-(tset _G :zubzob (create {:cmd :ls :user-keymaps {:toggle :<space>l}}))
+(tset _G :zubzob (create {:cmd :ls :keymaps {:toggle :<space>l} :split :float}))
 
 {: create}
