@@ -1,9 +1,9 @@
 ; (module :quickTerm package.seeall)
-; (import-macros {: def : import : import-submodules : setm : merge-right}
-;                :quickTerm.qt-macros)
+(import-macros {: def : import : import-submodules : merge-right} :macros)
 
-(require-macros :config.macros)
-(import-submodules :quickTerm utils config functions)
+; (require-macros :qt-macros)
+; (import-submodules :quickTerm utils config functions)
+(import utils config functions)
 
 (def api vim.api)
 (def layouts [:float :vsplit :split])
@@ -95,8 +95,6 @@
 ; TODO: clean up
 (fn terminal.init [{: cmd : bufn &as term}]
   (functions.merge-inplace term {:window (term:create_window) :visible true})
-  (pp :win-----)
-  (pp term.window)
   (api.nvim_buf_call term.bufn (partial vim.fn.termopen :zsh))
   (api.nvim_command :startinsert)
   (vim.fn.feedkeys (or (.. cmd "\n") ""))
@@ -116,6 +114,6 @@
     (new-term:init)
     new-term))
 
-(create {:cmd :ls :keymaps {:toggle :<space>l}})
+; (create {:cmd :ls :keymaps {:toggle :<space>l}})
 
-functions
+{: create}

@@ -1,4 +1,3 @@
-(module :quickTerm.funcions package.seeall)
 (local M {})
 
 (fn M.map [f xs]
