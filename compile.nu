@@ -1,7 +1,7 @@
 
 mkdir lua
 
-let filesToCompile = (ls ./fnl | where ($it.name !~ "macro" ) | select name)
+let filesToCompile = (ls ./fnl/quickterm | where ($it.name !~ "macro" ) | select name)
 
 def compile-fennel-file [fnlFile] {
     let out = ($fnlFile | str replace -a "fnl" "lua")

@@ -1,4 +1,4 @@
-; (module :quickTerm package.seeall)
+(module :quickTerm package.seeall)
 (import-macros {: def : import : import-submodules : merge-right} :macros)
 
 ; (require-macros :qt-macros)

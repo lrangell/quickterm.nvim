@@ -1,3 +1,4 @@
+module("quickTerm", package.seeall)
 local utils = require("utils")
 local config = require("config")
 local functions = require("functions")
