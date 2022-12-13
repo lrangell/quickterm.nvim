@@ -5,7 +5,7 @@ let filesToCompile = (ls ./fnl/quickterm | where ($it.name !~ "macro" ) | select
 
 def compile-fennel-file [fnlFile] {
     let out = ($fnlFile | str replace -a "fnl" "lua")
-    fennel --add-macro-path fnl/macros.fnl -c $fnlFile | save $out
+    fennel --add-macro-path fnl/quickterm/macros.fnl -c $fnlFile | save $out
     $"compiled to ($out)"
 }
 
