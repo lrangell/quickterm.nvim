@@ -1,13 +1,8 @@
 (module :quickTerm.config)
-(import-macros {: def : import : import-from} :quickTerm.macros)
+(require-macros :quickTerm.qt-macros)
 
-(def defaults {:keymaps {:terminal {:cycle_split :C-v :normal_mode :<esc><esc>}}
-               :split :vsplit})
-
-(fn mapper [mode]
-  (fn plugin-cmd [function-name])
-
-  (fn [from to]
-    (vim.api.nvim_set_keymap mode from {})))
+(local defaults {:keymaps {:terminal {:cycle_split :C-v
+                                      :normal_mode :<esc><esc>}}
+                 :split :vsplit})
 
 (fn setup [{: keymaps : split}])

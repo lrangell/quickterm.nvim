@@ -43,4 +43,8 @@
       (set x v)))
   x)
 
+(fn M.merge-inplace [left-tbl right-tbl]
+  (each [k v (pairs right-tbl)]
+    (tset left-tbl k v)))
+
 M

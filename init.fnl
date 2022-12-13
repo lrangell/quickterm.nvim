@@ -1,14 +1,15 @@
-(module :quickTerm package.seeall)
-(import-macros {: def : import : import-submodules : setm : merge-right}
-               :quickTerm.macros)
+; (module :quickTerm package.seeall)
+; (import-macros {: def : import : import-submodules : setm : merge-right}
+;                :quickTerm.qt-macros)
 
-(import-submodules :quickTerm utils config)
+(require-macros :config.macros)
+(import-submodules :quickTerm utils config functions)
 
 (def api vim.api)
 (def layouts [:float :vsplit :split])
 (def default-keymaps {:toggle :<space>k})
 
-(def terminal {:split :vsplit
+(def terminal {:split :float
                :window nil
                :new_line "\n"
                :transform (fn [text]
@@ -48,7 +49,8 @@
     :split (open-split "")))
 
 (fn terminal.open [{: bufn : window : split : visible &as term}]
-  (if (= nil visible) (term:init) (tset term :window (term:create_window))))
+  (when (= nil window)
+    (tset term :window (term:create_window))))
 
 (fn terminal.close [{: window &as term}]
   (when (not= nil window)
@@ -92,7 +94,9 @@
 
 ; TODO: clean up
 (fn terminal.init [{: cmd : bufn &as term}]
-  (setm term {:window (term:create_window) :visible true})
+  (functions.merge-inplace term {:window (term:create_window) :visible true})
+  (pp :win-----)
+  (pp term.window)
   (api.nvim_buf_call term.bufn (partial vim.fn.termopen :zsh))
   (api.nvim_command :startinsert)
   (vim.fn.feedkeys (or (.. cmd "\n") ""))
@@ -104,12 +108,14 @@
 (fn create [{: cmd : keymaps : split}]
   (let [bufn (vim.api.nvim_create_buf false false)
         new-term (merge-right terminal {: bufn : cmd : split})
-        all-keymaps (merge-right default-keymaps keymaps)]
+        all-keymaps (merge-right default-keymaps (or keymaps {}))]
     (each [method lhs (pairs all-keymaps)]
-      (pp {: method : lhs})
       (vim.keymap.set [:n :t] lhs
                       (fn []
                         (: new-term method))))
+    (new-term:init)
     new-term))
 
-{: create}
+(create {:cmd :ls :keymaps {:toggle :<space>l}})
+
+functions
