@@ -1,4 +1,5 @@
-__fnl_global__import_2dfrom({find}, "functions")
+local find = (require("quickterm.functions")).find
+do local _ = {nil} end
 local function find_chan(bufn)
   local _1_ = vim.api.nvim_list_chans()
   if (nil ~= _1_) then

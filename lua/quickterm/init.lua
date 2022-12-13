@@ -1,7 +1,6 @@
-module("quickTerm", package.seeall)
-local utils = require("utils")
-local config = require("config")
-local functions = require("functions")
+local utils = require("quickterm.utils")
+local config = require("quickterm.config")
+local functions = require("quickterm.functions")
 do local _ = {nil, nil, nil} end
 local api = vim.api
 local layouts = {"float", "vsplit", "split"}

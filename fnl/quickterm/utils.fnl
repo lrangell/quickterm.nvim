@@ -1,4 +1,5 @@
-(import-from [find] :functions)
+(import-macros {: def : import : import-from} :quickterm.macros)
+(import-from [find] :quickterm.functions)
 
 (fn find-chan [bufn]
   (-?> (vim.api.nvim_list_chans)

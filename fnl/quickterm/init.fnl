@@ -1,9 +1,8 @@
-(module :quickTerm package.seeall)
-(import-macros {: def : import : import-submodules : merge-right} :macros)
+(import-macros {: def : import : import-submodules : merge-right}
+               :quickterm.macros)
 
 ; (require-macros :qt-macros)
-; (import-submodules :quickTerm utils config functions)
-(import utils config functions)
+(import-submodules :quickterm utils config functions)
 
 (def api vim.api)
 (def layouts [:float :vsplit :split])

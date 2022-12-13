@@ -18,6 +18,10 @@
 (fn m.merge-right [left-tbl right-tbl]
   `(vim.tbl_deep_extend :force ,left-tbl ,right-tbl))
 
+(fn m.import-from [kv mod]
+  (icollect [_ name (ipairs kv)]
+    `(local ,name (. (require ,(tostring mod)) ,(tostring name)))))
+
 ; {: import : def : import-submodules : merge-right}
 
 m
